@@ -1,0 +1,14 @@
+{
+    "1": {
+        "answer": "first_answer"
+    },
+    "2": {
+        "answer": "second_answer",
+        "hint": "hint_for_the_second_answer"
+    },
+    "3": {
+        "answer": "third_answer",
+        "hint": "hint_for_the_third_answer",
+        "message": "win_message"
+    }
+}
