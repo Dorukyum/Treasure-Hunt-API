@@ -1,8 +1,27 @@
 from json import load
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from slowapi.errors import RateLimitExceeded
+from slowapi.extension import Limiter
+from slowapi.util import get_remote_address
+from starlette.responses import JSONResponse
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+def handle_rate_limit(request: Request, error: RateLimitExceeded):
+    response = JSONResponse(
+        {"message": f"Rate limit exceeded: {error.detail}"}, status_code=429
+    )
+    response = request.app.state.limiter._inject_headers(
+        response, request.state.view_rate_limit
+    )
+    return response
+
+
 with open("levels.json", "r") as f:
     data = load(f)
 
@@ -17,7 +36,8 @@ def home():
 
 
 @app.get("/{level}")
-def level(level: int, answer: str):
+@limiter.limit("24/minute")
+def level(request: Request, level: int, answer: str):
     try:
         current_data = data[str(level)]
     except KeyError:
