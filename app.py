@@ -32,7 +32,9 @@ def respond(message: str, **kwargs):
 
 @app.get("/")
 def home():
-    return "Hello there! This API was built by Dorukyum for the event team of TCR. To solve a level: GET /{level}?answer={answer}"
+    return respond(
+        "Hello there! This API was built by Dorukyum for the event team of TCR. To solve a level: GET /{level}?answer={answer}"
+    )
 
 
 @app.get("/{level}")
